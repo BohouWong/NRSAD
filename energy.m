@@ -13,7 +13,7 @@ e = zeros(1, size(segments, 2));
 if strcmp(instr, 'fullband')
     for i = 1:size(segments, 2)
         %e(i) = 10*log10(sum(segments(:,i).^2));
-        e(i) = sum(segments(:,i).^2);
+        e(i) = sqrt(sum(segments(:,i).^2)/length(segments(:,i)));
     end
 elseif strcmp(instr, 'highband')
     for i = 1:size(segments,2)
