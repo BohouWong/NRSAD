@@ -17,20 +17,10 @@ index = TF > th;
 
 %% decoding sequence
 findSp = 1;
-SP = [];startP = 0; endP = 0;
+SP = [];
+startP = 0; 
+endP = 0;
 for i = 1:length(index)
-%     if index(i) == 1
-%         firstZero = find(~index(i:end), 1) + i - 1;
-%         if isempty(firstZero)
-%             firstZero = length(index);
-%         end
-%         if sum(index(i:firstZero)) >= 5
-%             i = firstZero;
-%         else
-%             index(i:firstZero) = 0;
-%             i = firstZero;
-%         end
-%     end
     if findSp
         if index(i) == 1
             firstZero = find(~index(i:end), 1) + i - 1;

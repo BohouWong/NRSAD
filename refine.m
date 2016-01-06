@@ -15,40 +15,59 @@ function [index, SP] = refine(EZR, thezr, timeDur, index)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 SP = [];
 ezrindex = EZR > thezr;
+
+% try new one, if the EZR is below thezr for the entire region of a
+% reliable island, then delete this part
 for i = 1:length(index)
-    if (index(i) == 1) && (index(min(i+1, end)) == 0)
-        if ezrindex(i) == 0
-            for j = i:-1:1
-                if ezrindex(j) == 1
-                    index(max(j+1,i-10):i) = 0;
-                    break;
-                end
-            end
-        else
-            for j = i:length(ezrindex)
-                if ezrindex(j) == 0
-                    index(i:min(j-1,i+10)) = 1;
-                    break;
-                end
-            end
-        end
-    elseif (index(i) == 1) && (index(max(i-1, 1)) == 0)
-        if ezrindex(i) == 0
-            for j = 1:length(ezrindex)
-                if ezrindex(j) == 1
-                    index(i:min(j-1,i+10)) = 0;
-                    break;
-                end
-            end
-        else
-            for j = i:-1:1
-                if ezrindex(j) == 0
-                    index(max(j+1,i-10)) = 1;
-                    break;
-                end
-            end
+    if (index(i) == 1) && (index(max(i-1, 1)) == 0)  
+        startIndex = i;
+    elseif (index(i) == 1) && (index(min(i+1, end)) == 0)
+        endIndex = i;
+        percen = sum(ezrindex(startIndex:endIndex))/length(startIndex:endIndex);
+        if(percen < 0.3)
+            %output = startIndex:endIndex
+            index(startIndex:endIndex) = 0;
         end
     end
 end
+
+% old algorithm, not working
+% for i = 1:length(index)
+%     if (index(i) == 1) && (index(min(i+1, end)) == 0)
+%         % endpoint
+%         if ezrindex(i) == 0
+%             for j = i:-1:1
+%                 if ezrindex(j) == 1
+%                     index(max(j+1,i-10):i) = 0;
+%                     break;
+%                 end
+%             end
+%         else
+%             for j = i:length(ezrindex)
+%                 if ezrindex(j) == 0
+%                     index(i:min(j-1,i+10)) = 1;
+%                     break;
+%                 end
+%             end
+%         end
+%     elseif (index(i) == 1) && (index(max(i-1, 1)) == 0)
+%         % start point
+%         if ezrindex(i) == 0
+%             for j = 1:length(ezrindex)
+%                 if ezrindex(j) == 1
+%                     index(i:min(j-1,i+10)) = 0;
+%                     break;
+%                 end
+%             end
+%         else
+%             for j = i:-1:1
+%                 if ezrindex(j) == 0
+%                     index(max(j+1,i-10)) = 1;
+%                     break;
+%                 end
+%             end
+%         end
+%     end
+% end
 
 end
