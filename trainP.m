@@ -8,8 +8,8 @@ for i = 1:length(percen)
     [tpr, fpr, ~] = roc(truth(1:length(TF)), indexRefine);
     score(i) = tpr(2) - fpr(2);
 end
-
-%plot(1:length(percen), score);
+% figure;
+% plot(1:length(percen), score);
 [~, P] = max(score);
 P = P + 50;
 

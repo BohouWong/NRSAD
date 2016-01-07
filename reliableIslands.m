@@ -27,7 +27,7 @@ for i = 1:length(index)
             if isempty(firstZero)
                 firstZero = length(index);
             end
-            if sum(index(i:firstZero)) >= 5
+            if sum(index(i:firstZero)) >= 15
                 findSp = 0;
                 startP = (i-1)*timeDur/1000 + 1/2*timeDur/1000;
             else
@@ -40,7 +40,7 @@ for i = 1:length(index)
             if isempty(firstZero)
                 firstZero = length(index);
             end
-            if sum(~index(i:firstZero)) >= 6
+            if sum(~index(i:firstZero)) >= 15
                 findSp = 1;
                 endP = (i-1)*timeDur/1000 + 1/2*timeDur/1000;
                 SP = [SP; [startP, endP]];

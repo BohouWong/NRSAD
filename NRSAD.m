@@ -1,3 +1,4 @@
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % A Noise Robust SAD (I hope so)
 % read sigal from audio file, segment into 10ms per segment
@@ -13,8 +14,8 @@ timeDur = 10;
 %% read audio and segment into frames
 audioPath = 'C:\Users\Huang\Research\audio\MatlabWiener\';
 truthPath = 'C:\Users\Huang\Research\buckeyeFolder\';
-audioFile = ['s0201a_16k_nr_wiener.wav'];
-truthFile = ['s0201a.m'];
+audioFile = ['s0102a_16k_nr_wiener.wav'];
+truthFile = ['s0102a.m'];
 
 % audioPath = 'C:\Users\Huang\Research\audio\MatlabWiener\versameAudio\';
 % truthPath = 'C:\Users\Huang\Research\versameFolder\';
@@ -53,67 +54,34 @@ highbandE = highbandE/max(highbandE);
 TF = fullbandE + highbandE;
 
 %% find optimal A
-A = plotAandScore(TF, timeDur, truth);
+%A = plotAandScore(TF, timeDur, truth);
 
 %% compute threshold
-th = thresh(TF(1:15), A);
+th = thresh(TF(1:15), 100);
 
 %% find reliable islands
+[index, ~] = reliableIslands(TF, th, timeDur);
+
+%% get new parameter th
+TFnew = TF(index == 0);
+TFnew = TFnew(TFnew > prctile(TFnew, 50));
+TFnew = TFnew(TFnew < prctile(TFnew, 90));
+th = thresh(TFnew, 0.75);
 [index, SP] = reliableIslands(TF, th, timeDur);
 
 %% compute EZR and threshold
-EZR = zerocrossing(segments, 'EZR');
-EZR = medfilt1(EZR, 50);
-EZR = EZR/max(EZR);
+EZR = zerocrossing(segments, 'ZCR', th);
+%EZR = medfilt1(EZR, 50);
+%EZR = EZR/max(EZR);
+
+% EZRCurve = medfilt1(EZR, 100);
+% EZRCurve = EZRCurve/max(EZRCurve);
 P = trainP(EZR, timeDur, index, truth, TF);
 thezr = prctile(EZR, P);
 
+
 %% refine reliable islands
 [indexRefine, ~] = refine(EZR, thezr, timeDur, index);
-
-%% visualize
-% labelFont = 8;
-% titleFont = 12;
-% 
-% ySpIndexReliable = repmat([index,0], FsTest/1000*timeDur, 1);
-% ySpIndexReliable = reshape(ySpIndexReliable, 1, []);
-% ySpIndexReliable = ySpIndexReliable(1:length(yTest));
-% 
-% figure
-% ax(1) = subplot(4,1,1);
-% plot([1:length(yTest)]/FsTest, yTest)
-% hold on;
-% x = [1:length(yTest)]/FsTest;
-% plot(x(ySpIndex == 1), yTest(ySpIndex == 1), '.r');
-% hold off;
-% ylabel('Audio amplitude', 'fontsize', labelFont)
-% 
-% ax(2) = subplot(4,1,2);
-% plot([1:length(yTest)]/FsTest, yTest)
-% hold on;
-% x = [1:length(yTest)]/FsTest;
-% plot(x(ySpIndexReliable == 1), yTest(ySpIndexReliable == 1), '.g');
-% hold off;
-% ylabel('Audio amplitude', 'fontsize', labelFont)
-% 
-% ax(3) = subplot(4,1,3);
-% plot([1:length(TF)]/1000*timeDur, TF);
-% hold on;
-% plot([1:length(TF)]/1000*timeDur, th*ones(1, length(TF)), 'r');
-% hold off;
-% ylabel('time frequency parameter', 'fontsize', labelFont)
-% 
-% ax(4) = subplot(4,1,4);
-% plot([1:length(TF)]/1000*timeDur, EZR);
-% ylabel('EZR', 'fontsize', labelFont)
-% %axis([-inf, inf, 0, 0.01]);
-% hold on;
-% x = [1:length(TF)]/1000*timeDur;
-% plot(x(truth == 1), EZR(truth == 1), 'g.');
-% plot([1:length(TF)]/1000*timeDur, thezr*ones(1,length(TF)), 'r');
-% hold off;
-% 
-% linkaxes(ax, 'x')
 
 %% compare performance
 figure;

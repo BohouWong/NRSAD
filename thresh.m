@@ -14,6 +14,7 @@ function th = thresh(TF, A)
 Emax = max(TF);
 Avr = mean(TF(TF > 0));
 scale = Avr/Emax;
-th = (Emax - Avr)*scale^3*A;
+%th = (Emax - Avr)*scale^3*A;
+th = (Emax - Avr)*A;
 
 end
